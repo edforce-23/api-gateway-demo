@@ -1,0 +1,7 @@
+{
+	"errorResponse": {
+		"status": 500,
+		"reason": "ServiceError",
+		"message": "Unknown error occured processing the transaction."
+	}
+}

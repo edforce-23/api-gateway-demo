@@ -1,0 +1,86 @@
+swagger: '2.0'
+info:
+  version: '1.0'
+  title:  'GCP API Gateway Example'
+  description: 'GCP API Gateway implementation example'
+schemes:
+  - https
+consumes:
+  - 'application/json'
+produces:
+  - 'application/json'
+paths:
+  /hello:
+    get:
+      tags:
+        - Greetings
+      summary: 'Retrieve hello message.'
+      description: 'This API is for a poc purpose.'
+      operationId: 'greetingsFunction'
+      x-google-backend:
+        address: https://us-central1-api-gateway-poc-436323.cloudfunctions.net/greetings-dev
+      responses:
+        '200':
+          description: 'Successful transaction'
+          schema:
+            $ref: '#/definitions/200OKResponse'
+        '500':
+          description: 'Service errror'
+          schema:
+            $ref: '#/definitions/GeneralErrorResponse'
+          examples:
+            application/json:
+              errorResponse:
+                status: 500
+                reason: 'ServiceError'
+                message: 'Unknown error occured processing the transaction.'
+securityDefinitions:
+  greetings:
+    authorizationUrl: ''
+    flow: 'implicit'
+    type: 'oauth2'
+    x-google-issuer: 'https://securetoken.google.com/api-gateway-poc-436323'
+    x-google-jwks_uri: 'https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com'
+    x-google-audiences: 'api-gateway-poc-436323'
+security:
+  - greetings: []
+definitions:
+  200OKResponse:
+    type: 'object'
+    description: 'Contains success response'
+    required:
+      - message
+      - guid
+    properties:
+      message:
+        type: 'string'
+        description: 'Success message'
+        example: 'Hello World!'
+      guid:
+        type: 'string'
+        description: 'Transaction trace identification'
+        pattern: '^[2-9A-HJ-NP-Za-km-z]{18}$'
+        maxLength: 18
+        example: 'CexVPAxzxoAybYrg47'
+  GeneralErrorResponse:
+    type: 'object'
+    description: 'Generic error message object'
+    properties:
+      errorResponse:
+        type: 'object'
+        required:
+          - status
+          - reason
+          - message
+        properties:
+          status:
+            type: 'integer'
+            description: '3 digit HTTP status code'
+            minLength: 3
+            maxLength: 3
+          reason:
+            type: 'string'
+            description: 'The short description of the error'
+          message:
+            type: 'string'
+            description: 'The long description of the error'

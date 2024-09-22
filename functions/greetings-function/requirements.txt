@@ -1,0 +1,2 @@
+# Function dependencies
+shortuuid==1.0.13
